@@ -3,7 +3,7 @@ pcPythonExe = 'C:\Users\lucas\anaconda3\envs\IST_IPV21_Env\python.exe';
 
 %mod = py.importlib.import_module('getCorners');
 py.importlib.import_module('getCorners');
-py.getCorners.run("img1.png");
+py.getCorners.run("..\DATASETS\img1.png");
 
 aux = load('cornersIds.mat');
 aux_corners = squeeze(aux.corners);
