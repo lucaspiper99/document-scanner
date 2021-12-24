@@ -22,7 +22,7 @@ reference_path = "template2_fewArucos.png";
 outVideo = VideoWriter('output.avi');
 open(outVideo);
 
-for i=1:180
+while hasFrame(vidObj)
     vidObj = VideoReader('DATASETS/InitialDataset/FewArucos-Viewpoint1.mp4');
     vidFrame = readFrame(vidObj);
     imwrite(vidFrame, 'screenshot.png');
