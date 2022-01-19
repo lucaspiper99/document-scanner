@@ -26,14 +26,12 @@ def initArucoPos(template, aruco_dict, arucoParameters):
         print("getCorners: Could not detect Aruco markers. Exiting.")
         exit(0)
 
-    print("getCorners: Detected {} Aruco markers.".format(np.size(corners,0)))
+    #print("getCorners: Detected {} Aruco markers.".format(np.size(corners,0)))
 
     return corners, ids
 
 
-def run(img_path):
-
-    img_template = cv2.imread(img_path)
+def run(img_template):
 
     if img_template is None:
         print("getCorners: Unable to read the template.")

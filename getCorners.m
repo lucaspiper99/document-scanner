@@ -1,13 +1,21 @@
 function [corners, ids] = getCorners(image)
-%This function obtains the Aruko corner's coordinates, given the image path
+%This function obtains the Aruco corner's coordinates, given the image path
 
 py.importlib.import_module('getCorners');
-py.getCorners.run(image);
+py.getCorners.run(py.numpy.array(image));
 aux = load('cornersIds.mat');
 aux_corners = squeeze(aux.corners);
+dimensao = size(aux_corners);
+
+%if there is only one aruco
+if size(dimensao) < 3
+    aux_cornersOLD = aux_corners;
+    aux_corners = zeros(1,4,2);
+    aux_corners(1,:,:) = aux_cornersOLD;
+end
+
 corners = permute(aux_corners, [1,3,2]);
 ids = aux.ids;
 clear aux aux_corners
 
-% fprintf("\nNote: The first detected Aruco marker is corners(1,:,:), the second is (2,:,:), and so on\n")
 end
