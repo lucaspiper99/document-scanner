@@ -1,0 +1,60 @@
+function [H, SUCC] = RANSAC_Function(indexPairs,  REF ,IMG)
+
+inliersMAX = 0;
+n = 4;
+PS = 0.9;
+PI = 0.4;
+k = 1000; %uint32(log(1-PS)/log(1-PI^4));
+InlierList = zeros(size(indexPairs,1),3);
+InlierBestList = zeros(size(indexPairs,1),3);
+BestModel = [1, 0, 0; 0, 1,0; 0, 0,1];
+
+for i =1:k
+    Points = zeros(n,2);
+    %for j=1:n
+    j=1;
+        r1 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        
+        Points(j,1) = indexPairs(r1,1);
+        Points(j,2) = indexPairs(r1,2);
+        
+        r2 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        while r2 == r1
+            r2 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        end
+        
+        Points(j+1,1) = indexPairs(r2,1);
+        Points(j+1,2) = indexPairs(r2,2);
+        
+        r3 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        while r3 == r1 | r3 == r2
+            r3 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        end
+        
+        Points(j+2,1) = indexPairs(r3,1);
+        Points(j+2,2) = indexPairs(r3,2);
+        
+        r4 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        while r4 == r1 | r4 == r2 | r4 == r3
+            r4 = uint32(rand()*(size(indexPairs,1)-1)+1);
+        end
+        Points(j+3,1) = indexPairs(r4,1);
+        Points(j+3,2) = indexPairs(r4,2);
+    %end
+    H = homography([IMG.Location(Points(:,2),1),IMG.Location(Points(:,2),2)],[REF.Location(Points(:,1),1),REF.Location(Points(:,1),2)]);
+    inliers = 0;
+    for j = 1:size(indexPairs,1)
+        Vector = H*[IMG.Location(indexPairs(j,2),1);IMG.Location(indexPairs(j,2),2);1];
+        if abs((Vector(1)/Vector(3) - REF.Location(indexPairs(j,1),1)) / REF.Location(indexPairs(j,1),1)) < 0.1 && abs((Vector(2)/Vector(3) - REF.Location(indexPairs(j,1),2))/REF.Location(indexPairs(1,2),2)) < 0.1
+            inliers = inliers + 1;
+            InlierList(inliers,1) = j;
+        end
+    end
+    if inliers > inliersMAX
+        inliersMAX = inliers;
+        BestModel = H;
+        InlierBestList = InlierList;
+    end
+end
+SUCC = inliersMAX / size(indexPairs,1);
+end

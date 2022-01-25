@@ -15,15 +15,26 @@ function pivproject2021(task,  reference_path ,path_to_output_folder , path_to_i
         files = dir(fullfile(path_to_input_folder));
         for i = 1:length(files)                         %reads every file in the input folder
             if files(i).isdir == 0
-
+                
                 %reads the input image
                 [image,map] = imread(append(path_to_input_folder,'\',files(i).name));
                 if size(image,3) == 1
                     image = uint8(round(ind2rgb(image, map)*255));
                 end
+                
+                %reads the aruco markers
+                [imgCornersCoords, image_ids] = getCorners(image);
+                numArucos = size(imgCornersCoords,1);
+                refAruco = zeros(numArucos,1);
+                for i = 1:numArucos
+                    refAruco(i) = find(template_ids == image_ids(i));
+                end
 
+                %calculates the homography matrix
+                H = homography(imgCornersCoords, refCornersCoords(refAruco(:), :, :));
+                
                 %creates the output image
-                [rgbIM] = frame_homography(image, refCornersCoords, template_ids,ref_h,ref_w,vectorMatrix);
+                [rgbIM] = frame_homography(H ,ref_h,ref_w,vectorMatrix,image);
 
                 %saves the output image
                 imwrite(rgbIM,append(path_to_output_folder,'\',files(i).name))
