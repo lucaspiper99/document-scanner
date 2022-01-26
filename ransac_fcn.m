@@ -34,5 +34,4 @@ for i=1:k
     end
 end
 H = homography(best_inliers_img, best_inliers_ref);
-max_inliers
 end
