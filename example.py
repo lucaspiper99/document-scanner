@@ -53,55 +53,45 @@ def ransac(src_Pts, dst_Pts):
             maxLDest = lineDest.copy()
             maxLDest = np.asarray(maxLDest, dtype=np.float32)
     Hf = homography(maxLSrc, maxLDest, maxI)
-    print(maxI)
     return Hf
 
-img1 = cv2.imread("DATASETS/InitialDataset/templates/template2_fewArucos.png", 0)
-img2 = cv2.imread("input/exemplo_1.jpg", 0)
+
+file1 = f'rgb_0{750}.jpg'
+file2 = f'rgb_0{800}.jpg'
+# img1 = cv2.imread("DATASETS/InitialDataset/templates/template2_fewArucos.png", 0)
+img1 = cv2.imread(f"DATASETS/InitialDataset/FewArucos-Viewpoint2_images/{file1}", 0)
+img2 = cv2.imread(f"DATASETS/InitialDataset/FewArucos-Viewpoint2_images/{file2}", 0)
 
 height = int(img2.shape[0])
 width = int(img1.shape[1] * (height / img1.shape[0]))
 dim = (width, height)
 img1 = cv2.resize(img1, dim, interpolation=cv2.INTER_AREA)
 
-get_sift_pts(img1, img2)
+kp1, kp2, good_matches = get_sift_pts(img1, img2)
 sift_pts = loadmat("sift_pts.mat")
 dst_pts, src_pts = sift_pts['img1'], sift_pts['img2']
 
-print(dst_pts.shape[0])
-M = ransac(src_pts, dst_pts)
 
-img4 = cv2.warpPerspective(img2, M, (img1.shape[1], img1.shape[0]))
-cv2.namedWindow('Good Matches', cv2.WINDOW_NORMAL)
-cv2.moveWindow('Good Matches', 50, 50)
-cv2.imshow('Good Matches', img4)
-cv2.resizeWindow('Good Matches', int(img1.shape[1] * .6), int(img2.shape[0] * .6))
-cv2.waitKey()
+'''Para gravar imagem depois da homografia'''
+# M = ransac(src_pts, dst_pts)
+# img4 = cv2.warpPerspective(img2, M, (img1.shape[1], img1.shape[0]))
+# cv2.imwrite(f"DATASETS/InitialDataset/output_python/{file}", img4)
+# print('Working on', file)
 
-
-# M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 80.0)
-# matchesMask = mask.ravel().tolist()
-# h, w = img1.shape
-# pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
-# dst = cv2.perspectiveTransform(pts, M)
-# img2 = cv2.polylines(img2, [np.int32(dst)], True, 0, 3, cv2.LINE_AA)
-# draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, matchesMask=matchesMask, flags=2)
-# img3 = cv2.drawMatches(img1, kp1, img2, kp2, good_matches, None, **draw_params)
-# plt.imshow(img3, 'gray'), plt.show()
-
-# H = ransacHomography(src_Pts, dst_Pts)
-# print(H)
-# H = np.array([[.3, 110, -2494], [-4.3, 4.2, 3286.4], [0, 0, 1]])
-
-# warped = cv2.warpPerspective(img1, H, (img2.shape[0], img2.shape[1]))
-# cv2.imshow('warped', warped)
-# cv2.waitKey(0)
-# img_matches = np.empty((max(img1.shape[0], img2.shape[0]), img1.shape[1]+img2.shape[1], 3), dtype=np.uint8)
-#
-# cv2.drawMatches(img1, kp1, img2, kp2, good_matches, img_matches, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-#
+'''Para mostrar imagem depois da homografia'''
 # cv2.namedWindow('Good Matches', cv2.WINDOW_NORMAL)
 # cv2.moveWindow('Good Matches', 50, 50)
-# cv2.imshow('Good Matches', warped)
-# cv2.resizeWindow('Good Matches', 800, 600)
+# cv2.imshow('Good Matches', img4)
+# cv2.resizeWindow('Good Matches', int(img1.shape[1] * .6), int(img2.shape[0] * .6))
 # cv2.waitKey()
+
+'''Para mostrar as matches entre imagens'''
+M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 80.0)
+matchesMask = mask.ravel().tolist()
+h, w = img1.shape
+pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
+dst = cv2.perspectiveTransform(pts, M)
+img2 = cv2.polylines(img2, [np.int32(dst)], True, 0, 3, cv2.LINE_AA)
+draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, matchesMask=matchesMask, flags=2)
+img3 = cv2.drawMatches(img1, kp1, img2, kp2, good_matches, None, **draw_params)
+plt.imshow(img3, 'gray'), plt.show()
