@@ -1,7 +1,7 @@
 function H = homography(imgPts, refPts)
 %This function calculates the 3x3 homography matrix, H, given the
 %coordinates of the points in the image and the coordinates of the points
-%in the reference image
+%in the reference images
 
 numPts = size(imgPts, 1)*size(imgPts, 3);
 imgPts = reshape(permute(imgPts, [2,3,1]), 2, []);
@@ -16,8 +16,8 @@ for i=1:numPts
 end
 
 [~,~,V] = svd(A);
-V = V./V(end,end);
-H = V(:,end);
+% V = V./V(end,end);
+H = V(:,end)./V(end,end);
 H=reshape(H,3,3)';
 end
 

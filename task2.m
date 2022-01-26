@@ -4,11 +4,12 @@ close all;
 
 % arguments of pivproject2021
 reference_path = "DATASETS\InitialDataset\templates\template2_fewArucos.png";
-path_to_input_folder = "input";
+path_to_input_folder = "a";
 path_to_output_folder = "output";
 arg2 = 0;
 
 [reference,map] = imread(reference_path);
+% reference = padarray(reference,[3 3]);
 if size(reference,3) == 1
     reference = uint8(round(ind2rgb(reference, map)*255));
 end
@@ -17,8 +18,8 @@ end
 ref_h = size(reference,1);
 ref_w = size(reference,2);
 vectorMatrix = [repelem(1:ref_w,ref_h); repmat(1:ref_h,[1,ref_w]);...
-            ones(1,ref_h*ref_w)];
-
+            ones(1,ref_h*ref_w)];     
+        
 files = dir(fullfile(path_to_input_folder));
 
 for i = 1:length(files) %reads every file in the input folder
@@ -52,7 +53,7 @@ for i = 1:length(files) %reads every file in the input folder
 %             image);
 %          imshow(rgbIM)
         %------------------------------------------------------------------
-        
+        size(ref_pts, 1)
         H = ransac_fcn(ref_pts, img_pts);
         
         %creates the output image

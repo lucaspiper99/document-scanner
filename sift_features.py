@@ -11,7 +11,7 @@ def get_sift_pts(img1, img2):
     img2 - RGB image (width x height x 3 numpy array)
     """
 
-    sift = cv2.xfeatures2d.SIFT_create(1000)
+    sift = cv2.SIFT_create()
     kp1, des1 = sift.detectAndCompute(img1, None)
     kp2, des2 = sift.detectAndCompute(img2, None)
 
@@ -20,7 +20,7 @@ def get_sift_pts(img1, img2):
 
     good_matches = []
     for m, n in matches:
-        if m.distance < 0.8 * n.distance:  # trial and error determined distance
+        if m.distance < 0.9 * n.distance:  # trial and error determined distance
             good_matches.append(m)
 
     dst_pts = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 2)
