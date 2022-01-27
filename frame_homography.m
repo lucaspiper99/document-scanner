@@ -1,4 +1,7 @@
-function [rgbIM] = frame_homography(H ,ref_h,ref_w,vectorMatrix,image)
+function [rgbIM] = frame_homography(H ,ref_h, ref_w, image)
+
+vectorMatrix = [repelem(1:ref_w,ref_h); repmat(1:ref_h,[1,ref_w]);...
+    ones(1,ref_h*ref_w)];
 
 %initializes the output image
 rgbIM = zeros(ref_h, ref_w, 3);
