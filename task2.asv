@@ -18,9 +18,9 @@ ref_w = size(reference,2);
 files = dir(fullfile(input_path));
 files(1:2) = [];
 
-imgs2compare = 10;
+imgs2compare = 15;
 num_images = length(files);
-homographys = zeros(3, 3, num_images);
+homographys = zeros(3, 3, imgs2compare);
 rgb_images = zeros(ref_h, ref_w, 3, imgs2compare);
 
 for i = 1:num_images
@@ -30,40 +30,68 @@ for i = 1:num_images
         
         if i > imgs2compare
             
-            
+            tic
             best_i = compare2(rgb_images);
-            best_image = get_image(input_path, best_name);
-            H1 = get_SIFT_H(best_image, image, 2000, 1);
+            best_image = get_image(input_path, files(best_i+i-imgs2compare-1).name);
+            H1 = get_SIFT_H(best_image, image, 300, 1);
             H2 = homographys(:,:,best_i);
+            homographys(:,:,1) = [];
             homographys(:,:,i) = H2*H1;
             
+            if sum(homographys(:,:,i)==0,'all') == 9
+                homographys(:,:,i) = H2*H1;
+            end
+            
             rgb_images(:,:,:,1) = [];
-            rgb_images(:,:,:,imgs2compare+1) = frame_homography(homographys(:,:,i),...
+            rgb_images(:,:,:,imgs2compare) = frame_homography(homographys(:,:,i),...
                 ref_h, ref_w, image);
+            imwrite(rgb_images(:,:,:,imgs2compare),append(output_path,'\',files(i).name));
+            files(best_i+i-imgs2compare-1).name
+            toc
+            i
+            
+            
             
         else
             if i == 1
                 for j=1:imgs2compare
+                    tic
                     
                     image = get_image(input_path,files(j).name);
                     homographys(:,:,j) = get_SIFT_H(reference, image, 3000, 80);
                     rgb_images(:,:,:,j) = frame_homography(homographys(:,:,j),...
                         ref_h, ref_w, image);
+                    toc
+
                     
                 end
             end
             
-            best_first_i = compare2(rgb_images);
-            best_first_name = files(best_first_i).name;
+            tic
+            
+            best_i = compare2(rgb_images);
+            best_first_name = files(best_i).name;
             best_image = get_image(input_path, best_first_name);
 
-            H2 = homographys(:,:,best_first_i);
-            H1 = get_SIFT_H(best_image, image, 2000, 1);
+            H2 = homographys(:,:,best_i);
+            
+            if i == best_i
+                H1 = eye(3);
+            else
+                H1 = get_SIFT_H(best_image, image, 300, 1);
+            end
             homographys(:,:,i) = H2*H1;
+            
+            if sum(homographys(:,:,i)==0,'all') == 9
+                homographys(:,:,i) = H2*H1;
+            end
 
-            rbg_images(:,:,:,i) = frame_homography(homographys(:,:,i),...
+            rgb_images(:,:,:,i) = frame_homography(homographys(:,:,i),...
             ref_h, ref_w, image);
         
-            imwrite(rbg_images(:,:,:,i),append(output_path,'\',files(i).name));
+            imwrite(rgb_images(:,:,:,i),append(output_path,'\',files(i).name));
+            i
+            toc
         end
+        
 end
