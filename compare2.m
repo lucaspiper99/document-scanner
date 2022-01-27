@@ -1,53 +1,48 @@
-function FINAL = compare2(output_path, current_img, last2compare)
+function final_index = compare2(rgb_images)
 
-files = dir(fullfile(output_path));
-names = strings(length(files),1);
-hists = zeros(length(files),256);
+hists = zeros(size(rgb_images, 4),256);
 
-for i = 1:(current_img-last2compare) 
-    if files(i).isdir == 0
-        imageO_ = imread(append(output_path,'\',files(i).name));
-        names(i) = string(files(i).name);
-        histhue = imhist(rgb2val(imageO_));
-        hists(i,:) = histhue./sum(histhue);
-    end
+for i = 1:size(rgb_images, 4)
+    imageO_ = rgb_images(:,:,:,i);
+    hist_val = imhist(rgb2val(imageO_));
+    hists(i,:) = hist_val./sum(hist_val);
 end
 
-corrs = zeros(length(files));
+corrs = zeros(size(rgb_images, 4));
 minsum = 100000000000;
 
-sums = zeros(length(files),1);
-for i = 3:length(files)
-    sum = 0;
-    for j = 3:length(files)
+sums = zeros(size(rgb_images, 4),1);
+for i = 1:size(rgb_images, 4)
+    dist_sum = 0;
+    for j = 1:size(rgb_images, 4)
         histval = dist_kl(hists(i,:),hists(j,:));
-        sum = sum + histval;
+        dist_sum = dist_sum + histval;
         corrs(i,j) = histval;
     end
-    sums(i) = sum;
-    if sum < minsum
-        minsum = sum;
+    sums(i) = dist_sum;
+    if dist_sum < minsum
+        minsum = dist_sum;
     end
 end
 
-[goodim, goodent] = maxk(sums,round(length(sums)/5));
+[goodim, goodent] = mink(sums,round(length(sums)/4));
 minsum = 10000000000;
 sums2 = zeros(length(goodent),1);
 
 for i = 1:length(goodent)
-    sum = 0;
+    dist_sum = 0;
     for j = 1:length(goodent)
         histval = dist_kl(hists(goodent(i),:),hists(goodent(j),:));
-        sum = sum + histval;
+        dist_sum = dist_sum + histval;
         corrs(i,j) = histval;
     end
-    sums2(i) = sum;
-    if sum < minsum
-        minsum = sum;
+    sums2(i) = dist_sum;
+    if dist_sum < minsum
+        minsum = dist_sum;
         FINAL = i;
     end
 end
-
+final_index = goodent(FINAL);
 end
 
 function imgF = rgb2hue(img)
