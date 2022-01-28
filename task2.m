@@ -62,6 +62,7 @@ for i = 1:num_images
             base_images(:,:,:,i) = frame_homography(eye(3),im_h, im_w, image); %O MATLAB ESTÁ COMPLETAMENTE MALUCO, NÃO PERCEBO
             homographys(:,:,i) = H1;
             rgb_imagesO(:,:,:,i) = frame_homography(H1,ref_h, ref_w, image);
+            imwrite(rgb_imagesO(:,:,:,i),append(output_path,'\',files(i).name));
         else
             base_images(:,:,:,1) = [];
             homographys(:,:,1) = [];
@@ -69,6 +70,7 @@ for i = 1:num_images
             base_images(:,:,:,imgs_max) = frame_homography(eye(3),im_h, im_w, image);
             homographys(:,:,imgs_max) = H1;
             rgb_imagesO(:,:,:,imgs_max) = frame_homography(H1,ref_h, ref_w, image);
+            imwrite(rgb_imagesO(:,:,:,i),append(output_path,'\',files(imgs_max).name));
         end
 
             
