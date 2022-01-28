@@ -23,7 +23,6 @@ im_h = size(image,1);
 im_w = size(image,2);
 
 
-imgs2compare = 15;
 imgs_max = 30;
 num_images = length(files);
 homographys = zeros(3, 3, 1);
@@ -55,22 +54,23 @@ for i = 1:num_images
             H2 = get_SIFT_H( get_image(input_path,files(index + uint16(i-imgs_max)).name), image, 300, 3);
             H1 = homographys(:,:,index);
             H1 = H1*H2; 
+            img_temp = frame_homography(H1,ref_h, ref_w, image);
         end
 
 
         if any(i == 1:imgs_max)
             base_images(:,:,:,i) = frame_homography(eye(3),im_h, im_w, image); %O MATLAB ESTÁ COMPLETAMENTE MALUCO, NÃO PERCEBO
             homographys(:,:,i) = H1;
-            rgb_imagesO(:,:,:,i) = frame_homography(H1,ref_h, ref_w, image);
-            imwrite(rgb_imagesO(:,:,:,i),append(output_path,'\',files(i).name));
+            rgb_imagesO(:,:,:,i) = img_temp;
+            imwrite(img_temp,append(output_path,'\',files(i).name));
         else
             base_images(:,:,:,1) = [];
             homographys(:,:,1) = [];
             rgb_imagesO(:,:,:,1) = [];
             base_images(:,:,:,imgs_max) = frame_homography(eye(3),im_h, im_w, image);
             homographys(:,:,imgs_max) = H1;
-            rgb_imagesO(:,:,:,imgs_max) = frame_homography(H1,ref_h, ref_w, image);
-            imwrite(rgb_imagesO(:,:,:,imgs_max),append(output_path,'\',files(i).name));
+            rgb_imagesO(:,:,:,imgs_max) = img_temp;
+            imwrite(img_temp,append(output_path,'\',files(i).name));
         end
 
             
