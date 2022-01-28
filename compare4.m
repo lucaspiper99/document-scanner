@@ -35,9 +35,9 @@ else
     end
 
     if sum(sumsImg,'all') > 2*min(sums)
-        final_val = 1
+        final_val = 1;
     else
-        final_val = 0
+        final_val = 0;
 
     end
     end
