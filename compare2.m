@@ -1,33 +1,48 @@
-function final_index = compare2(rgb_images)
+function [final_index,varargout] = compare2(rgb_images)
 
 hists = zeros(size(rgb_images, 4),256);
 
 for i = 1:size(rgb_images, 4)
     imageO_ = rgb_images(:,:,:,i);
-    hist_val = imhist(rgb2hue(imageO_));
+    hist_val = imhist(rgb2val(imageO_));
     hists(i,:) = hist_val./sum(hist_val);
 end
 
-%corrs = zeros(size(rgb_images, 4));
+% for k = 1:size(firsti,4)
+%     imageO_ = firsti(:,:,:,k);
+%     hist_val = imhist(rgb2hue(imageO_));
+%     hist_first(k,:) = hist_val./sum(hist_val);
+% end
+    
+corrs = zeros(size(rgb_images, 4));
 minsum = 10000000000000000;
 
 sums = zeros(size(rgb_images, 4),1);
 for i = 1:size(rgb_images, 4)
+    
     dist_sum = 0;
     for j = 1:size(rgb_images, 4)
         histval = dist_kl(hists(i,:),hists(j,:));
         dist_sum = dist_sum + histval;
-        %corrs(i,j) = histval;
+        corrs(i,j) = histval;
     end
+    
+%     for k = 1:size(firsti,4)
+%         histval = dist_kl(hists(i,:),hist_first(k,:));
+%         dist_sum = dist_sum + histval;  
+%     end
+
     sums(i) = dist_sum;
     if dist_sum < minsum
         minsum = dist_sum;
     end
 end
-%sums
+sums
+corrs
 
-num_pass = sum(sums<=min(sums)*1.8);
-[goodim, goodent] = mink(sums,num_pass);
+good_nb = sum(sums<min(sums)*1.5)
+
+[goodim, goodent] = mink(sums,good_nb);
 minsum = 100000000000000000;
 sums2 = zeros(length(goodent),1);
 
@@ -36,19 +51,22 @@ for i = 1:length(goodent)
     for j = 1:length(goodent)
         histval = dist_kl(hists(goodent(i),:),hists(goodent(j),:));
         dist_sum = dist_sum + histval;
-        %corrs(i,j) = histval;
     end
+    
+%     for k = 1:size(firsti,4)
+%         histval = dist_kl(hists(i,:),hist_first(k,:));
+%         dist_sum = dist_sum + histval;  
+%     end
+    
     sums2(i) = dist_sum;
     if dist_sum < minsum
         minsum = dist_sum;
-        FINAL1 = i;
     end
 end
 
 
-
-num_pass2 = sum(sums2<=min(sums2)*1.2);
-[goodim2, goodent2] = mink(sums,num_pass2);
+good_nb2 = sum(sums2<min(sums2)*1.5)
+[goodim2, goodent2] = mink(sums2,good_nb2);
 minsum = 100000000000000000;
 sums3 = zeros(length(goodent2),1);
 
@@ -59,6 +77,10 @@ for i = 1:length(goodent2)
         dist_sum = dist_sum + histval;
         %corrs(i,j) = histval;
     end
+%     for k = 1:size(firsti,4)
+%         histval = dist_kl(hists(i,:),hist_first(k,:));
+%         dist_sum = dist_sum + histval;  
+%     end
     sums3(i) = dist_sum;
     if dist_sum < minsum
         minsum = dist_sum;
@@ -66,7 +88,9 @@ for i = 1:length(goodent2)
     end
 end
 
-
+if nargout == 2
+    varargout{1} = [goodent2(1:2)];
+end
 
 final_index = goodent2(FINAL);
 end

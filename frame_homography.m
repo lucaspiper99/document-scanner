@@ -8,8 +8,8 @@ rgbIM = zeros(ref_h, ref_w, 3);
 
 %calculates the coordinates of the output image's pixels in the input one
 vectorCMatrix = H\vectorMatrix;
-vectorRESMatrix = [uint16(vectorCMatrix(2,:)./vectorCMatrix(3,:));...
-    uint16(vectorCMatrix(1,:)./vectorCMatrix(3,:))];
+vectorRESMatrix = [int16(vectorCMatrix(2,:)./vectorCMatrix(3,:));...
+    int16(vectorCMatrix(1,:)./vectorCMatrix(3,:))];
 
 %Atributes the color to each pixel and discovers pixels outside the input
 %image
@@ -36,6 +36,7 @@ for i = 1:ref_w
 
     end
 end
+
 
 %Estimates the color of the points outside the input image
 

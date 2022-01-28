@@ -1,0 +1,39 @@
+function H = get_SIFT_H(img1, img2, iterations, distance,imagesI,imagesO,homographys)
+%This function gets the homography matrix, H, from two images, img1 and
+%img2, the iterations of the RANSAC algorithm and the minimum inlier
+%distance between img1 and img2 points   'MinLength',res*166
+
+py.importlib.import_module('sift_features');
+py.sift_features.get_sift_pts(py.numpy.array(img1),...
+    py.numpy.array(img2));
+sift_pts = load('sift_pts.mat');
+img1_pts = squeeze(sift_pts.img1);
+img2_pts = squeeze(sift_pts.img2);
+
+H = ransac_fcn(img1_pts, img2_pts, iterations, distance);
+
+img2_temp = frame_homography(H,size(img1,1), size(img1,2), image);
+
+
+if compare4(img2_temp,imagesO)
+    img1_pts = [];
+    img2_pts = [];
+    'garbage image'
+    index = compare3(img2,imagesI);
+    py.importlib.import_module('sift_features');
+    image_new = imagesI(:,:,:,index);
+    py.sift_features.get_sift_pts(py.numpy.array(image_new),...
+        py.numpy.array(img2));
+    sift_pts = load('sift_pts.mat');
+    img1_pts = squeeze(sift_pts.img1);
+    img2_pts = squeeze(sift_pts.img2);
+    H1 = homographys(:,:,index);
+    H2 = ransac_fcn(img1_pts, img2_pts, 300, 2);
+    H = H1*H2; 
+    return
+end
+
+
+
+end
+

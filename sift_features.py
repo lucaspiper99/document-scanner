@@ -19,9 +19,20 @@ def get_sift_pts(img1, img2):
     matches = bf.knnMatch(des1, des2, k=2)  # 2 nearest neighbours
 
     good_matches = []
-    for m, n in matches:
-        if m.distance < 0.9 * n.distance:  # trial and error determined distance
-            good_matches.append(m)
+    distance_ratio = 0.6
+    while True:
+        good_matches = []
+        for m, n in matches:
+            if m.distance < distance_ratio * n.distance:  # trial and error determined distance
+                good_matches.append(m)
+        print(distance_ratio)
+        if len(good_matches)>100:
+            break
+        else:
+            distance_ratio += .05
+            
+        
+            
 
     dst_pts = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 2)
     src_pts = np.float32([kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 2)

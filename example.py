@@ -57,25 +57,27 @@ def ransac(src_Pts, dst_Pts, iterations, distance):
 
 
 
-ref = cv2.imread("DATASETS/InitialDataset/templates/template2_fewArucos.png", 0)
-img = cv2.imread(f"DATASETS/InitialDataset/FewArucos-Viewpoint2_images/rgb_0021.jpg", 0)
+img = cv2.imread("DATASETS/test/rgb3393.jpg", 0)
+ref = cv2.imread("DATASETS/GoogleGlass/template_glass.jpg", 0)
 
 height = int(ref.shape[0])
 width = int(img.shape[1] * (height / img.shape[0]))
 dim = (width, height)
 img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
-get_sift_pts(ref, img)
+kp1, kp2, good_matches = get_sift_pts(ref, img)
+#get_sift_pts(ref, img)
 sift_pts = loadmat("sift_pts.mat")
 dst_pts, src_pts = sift_pts['img1'], sift_pts['img2']
-H = ransac(src_pts, dst_pts, 3000, 80)
-final_img = cv2.warpPerspective(img, H, (ref.shape[1], ref.shape[0]))
+#H = ransac(src_pts, dst_pts, 3000, 80)
+#final_img = cv2.warpPerspective(img, H, (ref.shape[1], ref.shape[0]))
 
-kp1, kp2, good_matches = get_sift_pts(ref, final_img)
-sift_pts = loadmat("sift_pts.mat")
-dst_pts, src_pts = sift_pts['img1'], sift_pts['img2']
-M = ransac(src_pts, dst_pts)
-print(np.linalg.norm(M-np.identity(3)))
+
+
+#sift_pts = loadmat("sift_pts.mat")
+#dst_pts, src_pts = sift_pts['img1'], sift_pts['img2']
+#M = ransac(src_pts, dst_pts,3000, 80)
+#print(np.linalg.norm(M-np.identity(3)))
 
 
 '''Para gravar imagem depois da homografia'''
@@ -93,11 +95,11 @@ print(np.linalg.norm(M-np.identity(3)))
 
 '''Para mostrar as matches entre imagens'''
 M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 10.0)
-print(np.linalg.norm(M-np.identity(3)))
+#print(np.linalg.norm(M-np.identity(3)))
 matchesMask = mask.ravel().tolist()
 h, w = ref.shape
 pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
 dst = cv2.perspectiveTransform(pts, M)
 draw_params = dict(matchColor=(0, 255, 0), singlePointColor=None, matchesMask=matchesMask, flags=2)
-img3 = cv2.drawMatches(ref, kp1, final_img, kp2, good_matches, None, **draw_params)
+img3 = cv2.drawMatches(ref, kp1, img, kp2, good_matches, None, **draw_params)
 plt.imshow(img3, 'gray'), plt.show()
