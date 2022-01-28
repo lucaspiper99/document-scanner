@@ -85,8 +85,7 @@ for i = 1:num_images
 %                 homographys(:,:,1) = [];
 %                 homographys(:,:,imgs2compare) = H2*H1;
 %             end
-
-    imwrite(rgb_imagesO(:,:,:,i),append(output_path,'\',files(i).name));    
+   
 
     i
 
