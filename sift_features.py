@@ -25,7 +25,6 @@ def get_sift_pts(img1, img2):
         for m, n in matches:
             if m.distance < distance_ratio * n.distance:  # trial and error determined distance
                 good_matches.append(m)
-        print(distance_ratio)
         if len(good_matches)>100:
             break
         else:
