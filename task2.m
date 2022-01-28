@@ -70,7 +70,7 @@ for i = 1:num_images
             base_images(:,:,:,imgs_max) = frame_homography(eye(3),im_h, im_w, image);
             homographys(:,:,imgs_max) = H1;
             rgb_imagesO(:,:,:,imgs_max) = frame_homography(H1,ref_h, ref_w, image);
-            imwrite(rgb_imagesO(:,:,:,i),append(output_path,'\',files(imgs_max).name));
+            imwrite(rgb_imagesO(:,:,:,imgs_max),append(output_path,'\',files(i).name));
         end
 
             
