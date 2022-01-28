@@ -1,7 +1,7 @@
 function H = get_SIFT_H(img1, img2, iterations, distance)
 %This function gets the homography matrix, H, from two images, img1 and
 %img2, the iterations of the RANSAC algorithm and the minimum inlier
-%distance between img1 and img2 points   'MinLength',res*166
+%distance between img1 and img2 points
 
 py.importlib.import_module('sift_features');
 py.sift_features.get_sift_pts(py.numpy.array(img1),...

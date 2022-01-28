@@ -16,7 +16,6 @@ for i=1:numPts
 end
 
 [~,~,V] = svd(A);
-% V = V./V(end,end);
 H = V(:,end)./V(end,end);
 H=reshape(H,3,3)';
 end
